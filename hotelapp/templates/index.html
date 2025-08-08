@@ -1,0 +1,136 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}PEARL NATUREYSTIC HOTEL{% endblock %}
+
+{% block css %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+    <!-- Hiệu ứng loading -->
+    <div id="loading-screen">
+      <div class="lds-roller">
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+      </div>
+      <div id="loading-text">Loading...</div>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div id="main-content" style="display: none;">
+      <!-- Hero Section -->
+      <section class="site-hero overlay " style="background-image: url(static/images/hero_4.jpg)" data-stellar-background-ratio="0.5">
+        <div class="container">
+          <div class="row site-hero-inner justify-content-center align-items-center">
+            <div class="col-md-10 text-center" data-aos="fade-up">
+                <span class="custom-caption text-uppercase text-white d-block  mb-3">Welcome To 5 <span class="fa fa-star text-primary"></span>   Hotel</span>
+              <h1 class="heading">A Best Place To Stay</h1>
+            </div>
+          </div>
+        </div>
+
+        <a class="mouse smoothscroll" href="#next">
+          <div class="mouse-icon">
+            <span class="mouse-wheel"></span>
+          </div>
+        </a>
+      </section>
+
+      <!-- Form tìm phòng -->
+       <section class="section bg-light pb-0"  >
+      <div class="container">
+
+          <div class="row check-availabilty" id="next">
+            <div class="block-32" data-aos="fade-up" data-aos-offset="-200">
+
+              <form action="{{ url_for('find_room') }}" method="get">
+                {% if err_msg %}
+                  <div class="alert alert-danger">
+                    {{ err_msg }}
+                  </div>
+                {% endif %}
+                <div class="row">
+                  <div class="col-md-6 mb-3 mb-lg-0 col-lg-3">
+                    <label for="checkIn" class="font-weight-bold text-black">Check In</label>
+                        <div class="field-icon-wrap">
+                    <div class="icon"><span class="icon-calendar"></span></div>
+                    <input type="date" class="form-control" id="checkIn" name="checkin-date" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3 mb-lg-0 col-lg-3">
+                    <label for="checkOut" class="font-weight-bold text-black">Check Out</label>
+                        <div class="field-icon-wrap">
+                    <div class="icon"><span class="icon-calendar"></span></div>
+                    <input type="date" class="form-control" id="checkOut" name="checkout-date" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3 mb-lg-0 col-lg-3">
+                      <div class="row">
+                           <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="room" class="font-weight-bold text-black">Rooms</label>
+                               <div class="field-icon-wrap">
+                        <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                            <select name="room" id="room" class="form-select" style="padding: 10px">
+                              <option>1</option>
+                              <option>2</option>
+                              <option>3</option>
+                              <option>4</option>
+                            </select>
+                            </div>
+                           </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-lg-3 mb-lg-0 align-self-end">
+                    <button type="submit" class="btn btn-primary btn-block text-white">Check Availability</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phần carousel -->
+      <section class="section">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 col-lg-4 mb-5" data-aos="fade-up">
+              <a href="#" class="room">
+                <figure class="img-wrap">
+                  <img src="https://eskipaper.com/images/maldive-islands-resort-1.jpg" alt="Maldives" class="img-fluid">
+                </figure>
+                <div class="carousel-caption">
+                  <h3>Maldives</h3>
+                  <p>We had such a great time in Maldives!</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-5" data-aos="fade-up">
+              <a href="#" class="room">
+                <figure class="img-wrap">
+                  <img src="https://getwallpapers.com/wallpaper/full/e/0/7/1111915-widescreen-maldives-wallpaper-1920x1080-full-hd.jpg" alt="Thailand" class="img-fluid">
+                </figure>
+                <div class="carousel-caption">
+                  <h3>Thailand</h3>
+                  <p>Thank you, Thailand!</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-5" data-aos="fade-up">
+              <a href="#" class="room">
+                <figure class="img-wrap">
+                  <img src="https://cdn.wallpapersafari.com/70/55/qu2Yvf.jpg" alt="New York" class="img-fluid">
+                </figure>
+                <div class="carousel-caption">
+                  <h3>New York</h3>
+                  <p>We love the Big Apple!</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+      {% block js %}
+          {{ super() }}
+          {% endblock %}
+{% endblock %}

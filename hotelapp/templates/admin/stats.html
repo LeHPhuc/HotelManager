@@ -1,0 +1,157 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<h1 class="text-center text-danger">THỐNG KÊ DOANH THU THEO LOẠI PHÒNG</h1>
+
+<div class="row">
+    <div class="col-md-7 col-xs-12">
+        <table class="table">
+            <tr>
+                <th>THÁNG</th>
+                <th>LOẠI PHÒNG</th>
+                <th>DOANH THU</th>
+                <th>SỐ LƯỢT THUÊ</th>
+                <th>TỶ LỆ</th>
+            </tr>
+            {% if month_stats %}
+                {% for r in month_stats %}
+                <tr>
+                    <td>Tháng {{ r.month }}</td>
+                    <td>{{ r.room_type_name }}</td>
+                    <td>{{ '{:,.1f}'.format(r.total_revenue) }} VND</td>
+                    <td>{{ r.total_bookings }}</td>
+                    <td>{{ (r.total_revenue / grand_cost * 100) | round(2) }}%</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4">Không có dữ liệu để hiển thị</td></tr>
+            {% endif %}
+        </table>
+
+        <h3 class="text-primary">Tổng doanh thu: {{ '{:,.1f}'.format(grand_cost) }} VND</h3>
+    </div>
+
+    <div class="col-md-5 col-xs-12">
+        <form method="get">
+            <div class="form-group">
+                <label for="year">Năm:</label>
+                <input type="number" class="form-control" name="year" id="year" min="2000" max="2100" required/>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="room_type">Loại phòng:</label>
+                <select class="form-control" name="room_type_id" id="room_type">
+                    <option value="">-- Tất cả --</option>
+                    {% for rt in room_types %}
+                                    <option value="{{ rt.id }}" {% if rt.id == room_type_id %}selected{% endif %}>{{ rt.room_type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="submit" value="Thống kê" class="btn btn-info">
+        </form>
+        <canvas id="monthChartId"></canvas>
+    </div>
+</div>
+
+
+<h1 class="text-center text-danger">THỐNG KÊ TẦN SUẤT SỬ DỤNG LOẠI PHÒNG</h1>
+<div class="row">
+    <div class="col-md-7 col-xs-12">
+        <h4>Thống kê sử dụng loại phòng</h4>
+        <table class="table">
+            <tr>
+                <th>THÁNG</th>
+                <th>PHÒNG</th>
+                <th>SỐ NGÀY THUÊ</th>
+                <th>TỶ LỆ</th>
+            </tr>
+            {% if density_stats %}
+                {% for u in density_stats %}
+                <tr>
+                    <td>{{ u.month }}</td>
+                    <td>{{ u.room_type_name }}</td>
+                    <td>{{ u.total_days_rented }}</td>
+                    <td>{{ u.usage_rate }}%</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4">Không có dữ liệu để hiển thị</td></tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <div class="col-md-5 col-xs-12">
+        <canvas id="densityChartId"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let labels = [], labels2 = [];
+    let data = [], data2 = [];
+    let colors = [], colors2 = [];
+    let borderColors = [], borderColors2 = [];
+    let r, g, b;
+
+    // Biểu đồ loại phòng
+    {% for r in month_stats %}
+        labels.push('{{ r.room_type_name }}'); // Loại phòng
+        data.push({{ r.total_revenue }}); // Doanh thu
+
+        r = parseInt(Math.random() * 255);
+        g = parseInt(Math.random() * 255);
+        b = parseInt(Math.random() * 255);
+
+        colors.push(`rgba(${r},${g},${b},0.2)`);
+        borderColors.push(`rgba(${r},${g},${b},1)`);
+    {% endfor %}
+
+    // Biểu đồ doanh thu theo tháng
+    {% for u in density_stats %}
+        labels2.push( '{{ u.room_type_name }}');
+        data2.push({{ u.usage_rate }});
+
+        r = parseInt(Math.random() * 255);
+        g = parseInt(Math.random() * 255);
+        b = parseInt(Math.random() * 255);
+
+        colors2.push(`rgba(${r},${g},${b},0.2)`);
+        borderColors2.push(`rgba(${r},${g},${b},1)`);
+    {% endfor %}
+
+    window.onload = function () {
+        const ctx = document.getElementById('monthChartId').getContext('2d');
+        const ctx2 = document.getElementById('densityChartId').getContext('2d');
+
+        // Biểu đồ doanh thu theo loại phòng
+        loadChart(ctx, labels, data, 'bar', colors, borderColors, 'Doanh thu theo tháng');
+
+        // Biểu đồ doanh thu theo tháng
+        loadChart(ctx2, labels2, data2, 'pie', colors2, borderColors2, 'Tần suất sử dụng các loại phòng');
+    }
+
+    function loadChart(ctx, labels, data, type, colors, borderColors, label) {
+        const myChart = new Chart(ctx, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

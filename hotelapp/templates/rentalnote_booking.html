@@ -1,0 +1,105 @@
+{% extends 'employee/base_employ.html' %}
+
+
+{% block title %} Employee {% endblock %}
+
+{% block content %}
+
+    {#thông báo#}
+    <div class="container">
+        {% if message %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endif %}
+    </div>
+
+
+    <div style="color: #007bff; text-align: center;"><h1>Tra Cứu Phiếu Đặt Phòng</h1></div>
+
+    <div class="container mb-3">
+        <h2>Nhập thông tin khách hàng</h2>
+
+        <form method="get" action="{{ url_for('rental_note') }}">
+            <div class="form-floating mb-3 mt-3">
+                <input type="text" class="form-control" id="name" placeholder="Tên khách hàng" name="customer-name">
+            </div>
+            <div class="form-floating mt-3 mb-3" style="margin-top: 0.5rem">
+                <input type="text" class="form-control" id="sdt" placeholder="Số điện thoại" name="phone-number">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem">Submit</button>
+        </form>
+    </div>
+
+    {% for booking_note in booking_notes %}
+        <form method="post"
+              action="{{ url_for('rental_note', customer_name=request.args.get('customer-name'), phone_number=request.args.get('phone-number')) }}">
+            <div class="container" style="background-color: lightslategrey; margin-top: 0.5rem; border-radius: 10px">
+
+                <div><h4><strong>ID:</strong><span><input name="bk-id"
+                                                          style="background-color: lightslategrey; border: none"
+                                                          type="text" value="{{ booking_note.id }}" readonly></span>
+                </h4></div>
+                {#            <div><h4><strong>ID:</strong> <span id="data-div">{{ booking_note.id }}</span></h4></div>#}
+                <div><h4><strong>Tên Khách Hàng:</strong> <span>{{ booking_note.customer_name }}</span></h4></div>
+                <div><h4><strong>Số Điện Thoại</strong> <span>{{ booking_note.phone_number }}</span></h4></div>
+
+                <div><h4><strong>Các Phòng Đặt:</strong></h4></div>
+
+                <div>
+
+                    <div class="panel-group" id="accordion">
+
+                        {% for details in booking_note.rooms %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion"
+                                           href="#collapse{{ details.id }}">{{ details.room.room_address }}</a>
+                                    </h4>
+                                </div>
+                                <div id="collapse{{ details.id }}" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <h5><strong>Ngày nhận:</strong> <span>{{ details.checkin_date }}</span></h5>
+                                    </div>
+                                    <div class="panel-body">
+                                        <h5><strong>Ngày trả:</strong> <span>{{ details.checkout_date }}</span></h5>
+                                    </div>
+                                    <div class="panel-body">
+                                        <h5><strong>Số người ở:</strong> <span>{{ details.number_people }}</span></h5>
+                                    </div>
+                                    <div class="panel-body">
+                                        <h5><strong>Loại
+                                            Phòng: </strong><span>{{ details.room.room_type.room_type_name }}</span>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:0.5rem"
+                            id="rental-button-{{ booking_note.id }}">Lập Phiếu Thuê
+                    </button>
+                </div>
+            </div>
+        </form>
+    {% endfor %}
+
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="confirmationModalLabel">Bạn Có chắc chắn muốn lập phiếu thuê</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="confirmAction">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
